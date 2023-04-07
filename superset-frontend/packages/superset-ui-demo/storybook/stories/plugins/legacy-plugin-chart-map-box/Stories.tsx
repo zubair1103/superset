@@ -42,7 +42,7 @@ export const Basic = () => {
         allColumnsY: 'LAT',
         clusteringRadius: '60',
         globalOpacity: 1,
-        mapboxColor: 'rgb(0, 122, 135)',
+        mapboxColor: 'rgb(70, 4, 121)',
         mapboxLabel: [],
         mapboxStyle: 'mapbox://styles/mapbox/light-v9',
         pandasAggfunc: 'sum',

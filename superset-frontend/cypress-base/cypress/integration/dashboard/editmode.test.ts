@@ -515,7 +515,7 @@ describe('Dashboard edit', () => {
       // label Anthony
       cy.get('[data-test-chart-name="Trends"] .line .nv-legend-symbol')
         .eq(2)
-        .should('have.css', 'fill', 'rgb(0, 122, 135)');
+        .should('have.css', 'fill', 'rgb(70, 4, 121)');
 
       // open main tab and nested tab
       openTab(0, 0);
@@ -526,7 +526,7 @@ describe('Dashboard edit', () => {
         '[data-test-chart-name="Top 10 California Names Timeseries"] .line .nv-legend-symbol',
       )
         .first()
-        .should('have.css', 'fill', 'rgb(0, 122, 135)');
+        .should('have.css', 'fill', 'rgb(70, 4, 121)');
     });
 
     it('should apply the color scheme across main tabs', () => {
@@ -560,7 +560,7 @@ describe('Dashboard edit', () => {
       cy.get('.treemap #rect-sum__SP_POP_TOTL').should(
         'have.css',
         'fill',
-        'rgb(255, 90, 95)',
+        'rgb(255, 56, 92)',
       );
 
       // go to second tab
@@ -569,7 +569,7 @@ describe('Dashboard edit', () => {
 
       cy.get('[data-test-chart-name="Trends"] .line .nv-legend-symbol')
         .first()
-        .should('have.css', 'fill', 'rgb(255, 90, 95)');
+        .should('have.css', 'fill', 'rgb(255, 56, 92)');
 
       // go back to first tab
       openTab(0, 0);

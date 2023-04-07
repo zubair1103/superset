@@ -37,9 +37,9 @@ describe('Visualization > Treemap', () => {
     number_format: '.3s',
   };
 
-  const level0 = '.chart-container rect[style="fill: rgb(255, 90, 95);"]';
-  const level1 = '.chart-container rect[style="fill: rgb(123, 0, 81);"]';
-  const level2 = '.chart-container rect[style="fill: rgb(0, 122, 135);"]';
+  const level0 = '.chart-container rect[style="fill: rgb(255, 56, 92);"]';
+  const level1 = '.chart-container rect[style="fill: rgb(146, 23, 77);"]';
+  const level2 = '.chart-container rect[style="fill: rgb(70, 4, 121);"]';
 
   function verify(formData) {
     cy.visitChartByParams(formData);
