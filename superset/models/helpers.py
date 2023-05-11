@@ -114,9 +114,10 @@ ADVANCED_DATA_TYPES = config["ADVANCED_DATA_TYPES"]
 
 
 def validate_adhoc_subquery(
-    sql: str,
+    expression: str,
     database_id: int,
     default_schema: str,
+    sqla_dialect: Optional[str] = None,
 ) -> str:
     """
     Check if adhoc SQL contains sub-queries or nested sub-queries with table.
@@ -128,9 +129,12 @@ def validate_adhoc_subquery(
     :raise SupersetSecurityException if sql contains sub-queries or
     nested sub-queries with table
     """
+    # build a proper SQL query from the expression
+    sql = f"SELECT {expression}"
+
     statements = []
     for statement in sqlparse.parse(sql):
-        if has_table_query(statement):
+        if has_table_query(str(statement), sqla_dialect):
             if not is_feature_enabled("ALLOW_ADHOC_SUBQUERY"):
                 raise SupersetSecurityException(
                     SupersetError(
@@ -143,6 +147,32 @@ def validate_adhoc_subquery(
         statements.append(statement)
 
     return ";\n".join(str(statement) for statement in statements)
+
+
+def process_sql_expression(
+    expression: Optional[str],
+    database_id: int,
+    schema: str,
+    template_processor: Optional[BaseTemplateProcessor],
+    sqla_dialect: Optional[str] = None,
+) -> Optional[str]:
+    """
+    Apply template and validate ad-hoc expressions.
+    """
+    if template_processor and expression:
+        expression = template_processor.process_template(expression)
+    if expression:
+        expression = validate_adhoc_subquery(
+            expression,
+            database_id,
+            schema,
+            sqla_dialect,
+        )
+        try:
+            expression = sanitize_clause(expression)
+        except (QueryClauseValidationException, SupersetSecurityException) as ex:
+            raise QueryObjectValidationError(ex.message) from ex
+    return expression
 
 
 def json_to_dict(json_str: str) -> Dict[Any, Any]:
@@ -838,27 +868,6 @@ class ExploreMixin:  # pylint: disable=too-many-public-methods
                 )
             ) from ex
 
-    def _process_sql_expression(  # pylint: disable=no-self-use
-        self,
-        expression: Optional[str],
-        database_id: int,
-        schema: str,
-        template_processor: Optional[BaseTemplateProcessor],
-    ) -> Optional[str]:
-        if template_processor and expression:
-            expression = template_processor.process_template(expression)
-        if expression:
-            expression = validate_adhoc_subquery(
-                expression,
-                database_id,
-                schema,
-            )
-            try:
-                expression = sanitize_clause(expression)
-            except QueryClauseValidationException as ex:
-                raise QueryObjectValidationError(ex.message) from ex
-        return expression
-
     def make_sqla_column_compatible(
         self, sqla_col: ColumnElement, label: Optional[str] = None
     ) -> ColumnElement:
@@ -1140,11 +1149,12 @@ class ExploreMixin:  # pylint: disable=too-many-public-methods
             sqla_column = sa.column(column_name)
             sqla_metric = self.sqla_aggregations[metric["aggregate"]](sqla_column)
         elif expression_type == utils.AdhocMetricExpressionType.SQL:
-            expression = self._process_sql_expression(
+            expression = process_sql_expression(
                 expression=metric["sqlExpression"],
                 database_id=self.database_id,
                 schema=self.schema,
                 template_processor=template_processor,
+                sqla_dialect=self.db_engine_spec.engine,
             )
             sqla_metric = literal_column(expression)
         else:
@@ -1523,11 +1533,12 @@ class ExploreMixin:  # pylint: disable=too-many-public-methods
             if isinstance(col, dict):
                 col = cast(AdhocMetric, col)
                 if col.get("sqlExpression"):
-                    col["sqlExpression"] = self._process_sql_expression(
+                    col["sqlExpression"] = process_sql_expression(
                         expression=col["sqlExpression"],
                         database_id=self.database_id,
                         schema=self.schema,
                         template_processor=template_processor,
+                        sqla_dialect=self.db_engine_spec.engine,
                     )
                 if utils.is_adhoc_metric(col):
                     # add adhoc sort by column to columns_by_name if not exists
@@ -1589,6 +1600,7 @@ class ExploreMixin:  # pylint: disable=too-many-public-methods
                             selected,
                             self.database_id,
                             self.schema,
+                            self.db_engine_spec.engine,
                         )
                         outer = literal_column(f"({selected})")
                         outer = self.make_sqla_column_compatible(outer, selected)
@@ -1615,6 +1627,7 @@ class ExploreMixin:  # pylint: disable=too-many-public-methods
                     _sql,
                     self.database_id,
                     self.schema,
+                    self.db_engine_spec.engine,
                 )
 
                 select_exprs.append(
@@ -1876,11 +1889,12 @@ class ExploreMixin:  # pylint: disable=too-many-public-methods
                             msg=ex.message,
                         )
                     ) from ex
-                where = self._process_sql_expression(
+                where = process_sql_expression(
                     expression=where,
                     database_id=self.database_id,
                     schema=self.schema,
                     template_processor=template_processor,
+                    sqla_dialect=self.db_engine_spec.engine,
                 )
                 where_clause_and += [self.text(where)]
             having = extras.get("having")
@@ -1894,11 +1908,12 @@ class ExploreMixin:  # pylint: disable=too-many-public-methods
                             msg=ex.message,
                         )
                     ) from ex
-                having = self._process_sql_expression(
+                having = process_sql_expression(
                     expression=having,
                     database_id=self.database_id,
                     schema=self.schema,
                     template_processor=template_processor,
+                    sqla_dialect=self.db_engine_spec.engine,
                 )
                 having_clause_and += [self.text(having)]
 
