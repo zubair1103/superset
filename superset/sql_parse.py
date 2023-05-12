@@ -725,7 +725,7 @@ def extract_table_references(
     sql_text = RE_JINJA_VAR.sub("abc", sql_text)
     try:
         tree = parse_sql(sql_text, dialect=sqloxide_dialect)
-    except Exception as ex:  # pylint: disable=broad-except
+    except Exception as ex:
         if show_warning:
             logger.warning(
                 "\nUnable to parse query with sqloxide:\n%s\n%s", sql_text, ex

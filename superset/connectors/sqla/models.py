@@ -94,10 +94,8 @@ from superset.db_engine_specs.base import BaseEngineSpec, TimestampExpression
 from superset.exceptions import (
     ColumnNotFoundException,
     DatasetInvalidPermissionEvaluationException,
-    QueryClauseValidationException,
     QueryObjectValidationError,
     SupersetGenericDBErrorException,
-    SupersetSecurityException,
 )
 from superset.jinja_context import (
     BaseTemplateProcessor,
@@ -114,7 +112,7 @@ from superset.models.helpers import (
     QueryResult,
     QueryStringExtended,
 )
-from superset.sql_parse import ParsedQuery, sanitize_clause
+from superset.sql_parse import ParsedQuery
 from superset.superset_typing import AdhocColumn, AdhocMetric, Metric, QueryObjectDict
 from superset.utils import core as utils
 from superset.utils.core import GenericDataType, get_username, MediumText

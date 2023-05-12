@@ -129,12 +129,12 @@ def validate_adhoc_subquery(
     :raise SupersetSecurityException if sql contains sub-queries or
     nested sub-queries with table
     """
-    # build a proper SQL query from the expression
-    sql = f"SELECT {expression}"
-
     statements = []
-    for statement in sqlparse.parse(sql):
-        if has_table_query(str(statement), sqla_dialect):
+    for statement in sqlparse.parse(expression):
+        # build a proper SQL query from the expression for sqloxide
+        sql = f"SELECT {expression}"
+
+        if has_table_query(sql, sqla_dialect):
             if not is_feature_enabled("ALLOW_ADHOC_SUBQUERY"):
                 raise SupersetSecurityException(
                     SupersetError(
