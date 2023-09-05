@@ -48,6 +48,7 @@ import SimplePagination from './components/Pagination';
 import useSticky from './hooks/useSticky';
 import { PAGE_SIZE_OPTIONS } from '../consts';
 import { sortAlphanumericCaseInsensitive } from './utils/sortAlphanumericCaseInsensitive';
+import { useDrillThrough } from 'packages/superset-ui-chart-controls/src/sections';
 
 export interface DataTableProps<D extends object> extends TableOptions<D> {
   tableClassName?: string;
@@ -68,6 +69,7 @@ export interface DataTableProps<D extends object> extends TableOptions<D> {
   wrapperRef?: MutableRefObject<HTMLDivElement>;
   onColumnOrderChange: () => void;
   onContextMenu?: (value: D, clientX: number, clientY: number) => void;
+  formData?: any;
 }
 
 export interface RenderHTMLCellProps extends HTMLProps<HTMLTableCellElement> {
@@ -101,8 +103,10 @@ export default typedMemo(function DataTable<D extends object>({
   wrapperRef: userWrapperRef,
   onColumnOrderChange,
   onContextMenu,
+  formData,
   ...moreUseTableOptions
 }: DataTableProps<D>): JSX.Element {
+  const { handleDrillThroughClick } = useDrillThrough();
   const tableHooks: PluginHook<D>[] = [
     useGlobalFilter,
     useSortBy,
@@ -286,6 +290,9 @@ export default typedMemo(function DataTable<D extends object>({
                       e.nativeEvent.clientY,
                     );
                   }
+                }}
+                onClick={() => {
+                  handleDrillThroughClick(formData, { data: row.original });
                 }}
               >
                 {row.cells.map(cell =>

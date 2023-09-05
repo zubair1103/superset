@@ -21,6 +21,7 @@ import { useHistory } from 'react-router-dom';
 import {
   CategoricalColorNamespace,
   FeatureFlag,
+  Filter,
   getSharedLabelColor,
   isFeatureEnabled,
   SharedLabelColorSource,
@@ -261,8 +262,8 @@ export const DashboardPage: FC<PageProps> = ({ idOrSlug }: PageProps) => {
             addWarningToast(
               t(
                 'filter_box will be deprecated ' +
-                  'in a future version of Superset. ' +
-                  'Please replace filter_box by dashboard filter components.',
+                'in a future version of Superset. ' +
+                'Please replace filter_box by dashboard filter components.',
               ),
             ),
           );
@@ -292,6 +293,32 @@ export const DashboardPage: FC<PageProps> = ({ idOrSlug }: PageProps) => {
       }
       if (isOldRison) {
         dataMask = isOldRison;
+      }
+
+      const drillThrougDataMaskStr = sessionStorage.getItem("drill_through_dataMask");
+
+      if (drillThrougDataMaskStr) {
+        try {
+          const drillThrougDataMaskRison = JSON.parse(drillThrougDataMaskStr);
+          const appliedFilters = {};
+          Object.keys(drillThrougDataMaskRison).forEach((id) => {
+            const filter = drillThrougDataMaskRison[id];
+            if (filter.filterState?.value) {
+              appliedFilters[filter.extraFormData.filters[0].col] = filter;
+            }
+          });
+          const nativeFiltersConfig = dashboard?.metadata?.native_filter_configuration;
+          if (nativeFiltersConfig) {
+            const appliedRison = {};
+            nativeFiltersConfig.forEach((filter: Filter) => {
+              if (filter.name in appliedFilters) {
+                appliedRison[filter.id] = { ...appliedFilters[filter.name], id: filter.id }
+              }
+            })
+            dataMask = appliedRison;
+          }
+        } catch (e) { }
+        sessionStorage.removeItem("drill_through_dataMask")
       }
 
       if (readyToRender) {
@@ -334,7 +361,7 @@ export const DashboardPage: FC<PageProps> = ({ idOrSlug }: PageProps) => {
       // when dashboard unmounts or changes
       return injectCustomCss(css);
     }
-    return () => {};
+    return () => { };
   }, [css]);
 
   useEffect(() => {

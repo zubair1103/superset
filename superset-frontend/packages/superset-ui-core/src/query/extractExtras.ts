@@ -69,6 +69,20 @@ export default function extractExtras(formData: QueryFormData): ExtractedExtra {
       filters.push(filter);
     }
   });
+  const drillTroughFiltersStr = sessionStorage.getItem("drill_through_col_filters");
+  if (drillTroughFiltersStr) {
+    try {
+      const drillTroughFiltersJSON = JSON.parse(drillTroughFiltersStr);
+      Object.keys(drillTroughFiltersJSON).forEach((col) => {
+        filters.push({
+          col,
+          op: "==",
+          val: drillTroughFiltersJSON[col],
+        })
+      })
+    } catch (e) { }
+    sessionStorage.removeItem("drill_through_col_filters");
+  }
 
   // SQL
   extras.time_grain_sqla = extract.time_grain_sqla || formData.time_grain_sqla;

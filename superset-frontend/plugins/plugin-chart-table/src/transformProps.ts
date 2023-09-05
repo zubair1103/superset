@@ -201,6 +201,7 @@ const transformProps = (
     height,
     width,
     rawFormData: formData,
+    formData: camelCaseFormData,
     queriesData = [],
     filterState,
     ownState: serverPaginationData,
@@ -279,6 +280,7 @@ const transformProps = (
     timeGrain,
     allowRearrangeColumns,
     onContextMenu,
+    formData: camelCaseFormData,
   };
 };
 

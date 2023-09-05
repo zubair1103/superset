@@ -229,6 +229,7 @@ export default function TableChart<D extends DataRecord = DataRecord>(
     allowRearrangeColumns = false,
     onContextMenu,
     emitCrossFilters,
+    formData,
   } = props;
   const timestampFormatter = useCallback(
     value => getTimeFormatterForGranularity(timeGrain)(value),
@@ -663,6 +664,7 @@ export default function TableChart<D extends DataRecord = DataRecord>(
         // not in use in Superset, but needed for unit tests
         sticky={sticky}
         onContextMenu={handleContextMenu}
+        formData={formData}
       />
     </Styles>
   );

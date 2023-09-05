@@ -22,7 +22,9 @@ apt update
 apt install -y chromium
 
 cd /app/superset-frontend
+export NODE_OPTIONS=--max-old-space-size=22000
 npm install -f --no-optional --global webpack webpack-cli
+export NODE_OPTIONS=--max-old-space-size=22000
 npm install -f --no-optional
 
 echo "Running frontend"

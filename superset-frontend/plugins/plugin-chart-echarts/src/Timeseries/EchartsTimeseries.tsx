@@ -51,6 +51,7 @@ export default function EchartsTimeseries({
   refs,
   emitCrossFilters,
 }: TimeseriesChartTransformedProps) {
+  console.log("echartOptions", echartOptions)
   const { stack } = formData;
   const echartRef = useRef<EchartsHandler | null>(null);
   // eslint-disable-next-line no-param-reassign

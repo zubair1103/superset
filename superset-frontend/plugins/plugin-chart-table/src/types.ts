@@ -116,6 +116,7 @@ export interface TableChartTransformedProps<D extends DataRecord = DataRecord> {
     clientY: number,
     filters?: BinaryQueryObjectFilterClause[],
   ) => void;
+  formData: any;
 }
 
 export default {};

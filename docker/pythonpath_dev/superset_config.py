@@ -23,7 +23,10 @@
 import logging
 import os
 from datetime import timedelta
-from typing import Optional
+from typing import (
+    Dict,
+    Optional,
+)
 
 from cachelib.file import FileSystemCache
 from celery.schedules import crontab
@@ -44,6 +47,7 @@ def get_env_variable(var_name: str, default: Optional[str] = None) -> str:
             )
             raise EnvironmentError(error_msg)
 
+SECRET_KEY="fsLVXWTP22F9KzrB8IsAYRGCczMTvkMO8TFoUyFRNASOL4Ovmr08Vkz7"
 
 DATABASE_DIALECT = get_env_variable("DATABASE_DIALECT")
 DATABASE_USER = get_env_variable("DATABASE_USER")
@@ -107,6 +111,12 @@ WEBDRIVER_BASEURL = "http://superset:8088/"
 WEBDRIVER_BASEURL_USER_FRIENDLY = WEBDRIVER_BASEURL
 
 SQLLAB_CTAS_NO_LIMIT = True
+
+FEATURE_FLAGS: Dict[str, bool] = {
+    "GENERIC_CHART_AXES": True,
+    "DASHBOARD_CROSS_FILTERS": True,
+    "HORIZONTAL_FILTER_BAR": True,
+}
 
 #
 # Optionally import superset_config_docker.py (which will have been included on

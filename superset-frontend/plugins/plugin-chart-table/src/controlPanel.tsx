@@ -534,6 +534,7 @@ const config: ControlPanelConfig = {
         ],
       ],
     },
+    sections.drillThroughControls,
   ],
   formDataOverrides: formData => ({
     ...formData,
