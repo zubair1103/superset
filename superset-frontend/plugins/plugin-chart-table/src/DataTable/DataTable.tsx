@@ -23,7 +23,6 @@ import React, {
   HTMLProps,
   MutableRefObject,
   CSSProperties,
-  MouseEvent,
 } from 'react';
 import {
   useTable,
@@ -38,7 +37,8 @@ import {
   Row,
 } from 'react-table';
 import { matchSorter, rankings } from 'match-sorter';
-import { typedMemo } from '@superset-ui/core';
+import { typedMemo, usePrevious } from '@superset-ui/core';
+import { isEqual } from 'lodash';
 import GlobalFilter, { GlobalFilterProps } from './components/GlobalFilter';
 import SelectPageSize, {
   SelectPageSizeProps,
@@ -68,8 +68,6 @@ export interface DataTableProps<D extends object> extends TableOptions<D> {
   rowCount: number;
   wrapperRef?: MutableRefObject<HTMLDivElement>;
   onColumnOrderChange: () => void;
-  onContextMenu?: (value: D, clientX: number, clientY: number) => void;
-  formData?: any;
 }
 
 export interface RenderHTMLCellProps extends HTMLProps<HTMLTableCellElement> {
@@ -102,8 +100,6 @@ export default typedMemo(function DataTable<D extends object>({
   serverPagination,
   wrapperRef: userWrapperRef,
   onColumnOrderChange,
-  onContextMenu,
-  formData,
   ...moreUseTableOptions
 }: DataTableProps<D>): JSX.Element {
   const { handleDrillThroughClick } = useDrillThrough();
@@ -115,6 +111,8 @@ export default typedMemo(function DataTable<D extends object>({
     doSticky ? useSticky : [],
     hooks || [],
   ].flat();
+  const columnNames = Object.keys(data?.[0] || {});
+  const previousColumnNames = usePrevious(columnNames);
   const resultsSize = serverPagination ? rowCount : data.length;
   const sortByRef = useRef([]); // cache initial `sortby` so sorting doesn't trigger page reset
   const pageSizeRef = useRef([initialPageSize, resultsSize]);
@@ -194,6 +192,7 @@ export default typedMemo(function DataTable<D extends object>({
       getTableSize: defaultGetTableSize,
       globalFilter: defaultGlobalFilter,
       sortTypes,
+      autoResetSortBy: !isEqual(columnNames, previousColumnNames),
       ...moreUseTableOptions,
     },
     ...tableHooks,
@@ -277,24 +276,7 @@ export default typedMemo(function DataTable<D extends object>({
             prepareRow(row);
             const { key: rowKey, ...rowProps } = row.getRowProps();
             return (
-              <tr
-                key={rowKey || row.id}
-                {...rowProps}
-                onContextMenu={(e: MouseEvent) => {
-                  if (onContextMenu) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    onContextMenu(
-                      row.original,
-                      e.nativeEvent.clientX,
-                      e.nativeEvent.clientY,
-                    );
-                  }
-                }}
-                onClick={() => {
-                  handleDrillThroughClick(formData, { data: row.original });
-                }}
-              >
+              <tr key={rowKey || row.id} {...rowProps}>
                 {row.cells.map(cell =>
                   cell.render('Cell', { key: cell.column.id }),
                 )}

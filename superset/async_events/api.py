@@ -32,17 +32,18 @@ class AsyncEventsRestApi(BaseSupersetApi):
     resource_name = "async_event"
     allow_browser_login = True
 
-    @expose("/", methods=["GET"])
+    @expose("/", methods=("GET",))
     @event_logger.log_this
     @protect()
     @safe
     @permission_name("list")
     def events(self) -> Response:
         """
-        Reads off of the Redis async events stream, using the user's JWT token and
+        Read off of the Redis async events stream, using the user's JWT token and
         optional query params for last event received.
         ---
         get:
+          summary: Read off of the Redis events stream
           description: >-
             Reads off of the Redis events stream, using the user's JWT token and
             optional query params for last event received.

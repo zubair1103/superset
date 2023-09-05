@@ -29,8 +29,10 @@ under the License.
 - [1.4.2](#142-sat-mar-19-000806-2022-0200)
 - [1.4.1](#141)
 
-### 2.1 (Thu Mar 16 21:13:05 2023 -0700)
+### 2.1.0 (Thu Mar 16 21:13:05 2023 -0700)
+
 **Database Migrations**
+
 - [#23139](https://github.com/apache/superset/pull/23139) fix: memoized decorator memory leak (@dpgaspar)
 - [#19676](https://github.com/apache/superset/pull/19676) chore(frontend): Spelling (@jsoref)
 - [#22852](https://github.com/apache/superset/pull/22852) chore: removing unnecessary double spaces, a.k.a. "shotgun holes" (@rusackas)
@@ -61,6 +63,7 @@ under the License.
 - [#20432](https://github.com/apache/superset/pull/20432) feat: add name, description and non null tables to RLS (@dpgaspar)
 
 **Features**
+
 - [#22713](https://github.com/apache/superset/pull/22713) feat(helm): allow persisting nodePort for services (@rajan123456)
 - [#23040](https://github.com/apache/superset/pull/23040) feat(sqllab): Add event logger (@justinpark)
 - [#22670](https://github.com/apache/superset/pull/22670) feat(datasets): Populate Usage tab in Edit Dataset view (@codyml)
@@ -256,6 +259,7 @@ under the License.
 - [#20412](https://github.com/apache/superset/pull/20412) feat: allow setting db UUID (@betodealmeida)
 
 **Fixes**
+
 - [#23388](https://github.com/apache/superset/pull/23388) fix: update default WEBDRIVER_OPTION_ARGS and add Firefox libs to Dockerfile (@nytai)
 - [#23299](https://github.com/apache/superset/pull/23299) fix(dashboard): Infinite load when filter with default first value is out of scope (@kgabryje)
 - [#23238](https://github.com/apache/superset/pull/23238) fix(dashboard): Charts crashing when cross filter on adhoc column is applied (@kgabryje)

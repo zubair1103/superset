@@ -46,7 +46,8 @@ import DndColumnSelectControl, {
   DndMetricSelect,
 } from './DndColumnSelectControl';
 import XAxisSortControl from './XAxisSortControl';
-import SelectDashboardControl from './SelectDashboardControl';
+import CurrencyControl from './CurrencyControl';
+import ColumnConfigControl from './ColumnConfigControl';
 
 const controlMap = {
   AnnotationLayerControl,
@@ -55,6 +56,8 @@ const controlMap = {
   CollectionControl,
   ColorPickerControl,
   ColorSchemeControl,
+  ColumnConfigControl,
+  CurrencyControl,
   DatasourceControl,
   DateFilterControl,
   DndColumnSelectControl,
